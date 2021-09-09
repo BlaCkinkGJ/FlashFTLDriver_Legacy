@@ -1,7 +1,6 @@
 #include "../../include/settings.h"
 #include "../../bench/measurement.h"
 #include "../../blockmanager/bb_checker.h"
-#include "../../algorithm/Lsmtree/lsmtree.h"
 #include "frontend/libmemio/libmemio.h"
 #include "devices/nohost/dm_nohost.h"
 #include "bdbm_inf.h"
@@ -10,7 +9,6 @@
 #include <limits.h>
 #include <string.h>
 pthread_mutex_t test_lock;
-extern lsmtree LSM;
 extern bb_checker checker;
 memio_t *mio;
 lower_info memio_info={
@@ -18,7 +16,6 @@ lower_info memio_info={
 	.destroy=memio_info_destroy,
 	.write=memio_info_push_data,
 	.read=memio_info_pull_data,
-	.read_hw=memio_info_hw_read,
 	.device_badblock_checker=memio_badblock_checker,
 	.trim_block=memio_info_trim_block,
 	.trim_a_block=memio_info_trim_a_block,
@@ -28,11 +25,12 @@ lower_info memio_info={
 	.lower_free=memio_free_dma,
 	.lower_flying_req_wait=memio_flying_req_wait,
 	.lower_show_info=memio_show_info_,
-
 	.lower_tag_num=memio_tag_num,
+#ifdef Lsmtree
 	.hw_do_merge=memio_do_merge,
 	.hw_get_kt=memio_get_kt,
 	.hw_get_inv=memio_get_inv
+#endif
 };
 
 uint32_t memio_info_create(lower_info *li, blockmanager *bm){

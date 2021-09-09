@@ -37,8 +37,14 @@ void* inf_transaction_end_req(void *req);
 extern bool TXN_debug;
 extern char *TXN_debug_ptr;
 static uint32_t seq_val;
+static char empty_page[PAGESIZE];
+static bool test_start=false;
 uint32_t inf_vector_make_req(char *buf, void* (*end_req) (void*), uint32_t mark){
 	uint32_t idx=0;
+	if(test_start==false){
+		memset( empty_page, 0,  PAGESIZE);
+		test_start=true;
+	}
 	vec_request *txn=(vec_request*)malloc(sizeof(vec_request));
 	//idx+=sizeof(uint32_t);//length;
 	txn->tid=*(uint32_t*)buf_parser(buf, &idx, sizeof(uint32_t)); //get tid;
@@ -78,7 +84,10 @@ uint32_t inf_vector_make_req(char *buf, void* (*end_req) (void*), uint32_t mark)
 			case FS_GET_T:
 				seq_val=temp->seq;
 				temp->magic=0;
-				temp->value=inf_get_valueset(NULL, FS_MALLOC_R, PAGESIZE);
+				temp->value=inf_get_valueset(empty_page, FS_MALLOC_R, PAGESIZE);
+				if(((uint32_t*)temp->value->value)[0]!=0){
+					printf("???\n");
+				}
 				break;
 			case FS_SET_T:
 				temp->value=inf_get_valueset(NULL, FS_MALLOC_W, PAGESIZE);
@@ -214,12 +223,18 @@ void *vectored_main(void *__input){
 
 bool vectored_end_req (request * const req){
 	vectored_request *preq=req->parents;
+	static uint32_t cnt=0;
+	static uint32_t not_read=0;
+	bool iszero=false;
 	switch(req->type){
 		case FS_GET_T:
 	//		printf("ack req->seq:%u\n", req->seq);
 	//		fprintf(stderr,"read:%u\n",req->seq);
 			if(mp._data_check_flag){
-				__checking_data_check(req->key, req->value->value);
+				if(!__checking_data_check(req->key, req->value->value, &iszero)){
+					if(iszero) not_read++;
+					printf("L %u P %u is differ %u zero_read %u\n", req->key, req->ppa, cnt++, not_read);
+				}
 			}
 		case FS_NOTFOUND_T:
 			bench_reap_data(req, mp.li);

@@ -68,6 +68,8 @@ void page_destroy (lower_info* li, algorithm *algo){
 
 inline void send_user_req(request *const req, uint32_t type, ppa_t ppa,value_set *value){
 	/*you can implement your own structur for your specific FTL*/
+	if(req)
+		req->ppa=ppa;
 	if(type==DATAR){
 		fdriver_lock(&rb.read_buffer_lock);
 		if(ppa==rb.buffer_ppa){

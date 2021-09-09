@@ -44,30 +44,31 @@
 #ifdef MLC
 #define TOTALSIZE (300L*G)
 #define REALSIZE (512L*G)
-#define PAGESIZE (16*K)
+#define PAGESIZE (8*K)
 #define _PPB (256)
 #define BPS (64)
 #define _PPS (_PPB*BPS)
 
 #elif defined(SLC)
 
-#define GIGAUNIT 16L
+#define GIGAUNIT 512L
 #define OP 80
 #define SHOWINGSIZE (GIGAUNIT * G)
-#define TOTALSIZE (SHOWINGSIZE + (SHOWINGSIZE/100*(100-OP)))
+//#define TOTALSIZE (SHOWINGSIZE + (SHOWINGSIZE/100*(100-OP)))
+#define TOTALSIZE (SHOWINGSIZE)
 #define REALSIZE (512L*G)
-#define PAGE_TARGET_KILO (16)
+#define PAGE_TARGET_KILO (8)
 #define PAGESIZE (PAGE_TARGET_KILO*K)
-#define _PPB (256*8/PAGE_TARGET_KILO)
+#define _PPB (128*8/PAGE_TARGET_KILO)
 
-//#ifdef AMF
+#ifdef AMF
 	#define NOC 2
 	#define BPS (64*NOC)
 	#define _PPS (_PPB*BPS)
-//#else
-//	#define BPS (64)
-//	#define _PPS (_PPB*BPS)
-//#endif
+#else
+	#define BPS (64)
+	#define _PPS (_PPB*BPS)
+#endif
 
 #define PUNIT (64)
 #endif

@@ -69,7 +69,7 @@ void bench_init(){
 		_master->m[i].type=NOR;
 	}
 	
-	bitmap=(uint8_t*)malloc(sizeof(uint8_t)*(RANGE));
+	//bitmap=(uint8_t*)malloc(sizeof(uint8_t)*(RANGE));
 	_master->error_cnt=0;
 }
 void bench_make_data(){

@@ -7,8 +7,8 @@ export CC=g++
 export CXX=g++
 
 TARGET_INF=interface
-export TARGET_LOWER=posix_memory
-export TARGET_ALGO=DFTL
+export TARGET_LOWER=bdbm_drv
+export TARGET_ALGO=Page_ftl
 export TARGET_BM=sequential
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
@@ -29,7 +29,8 @@ export COMMONFLAGS=\
 			-DSLC\
 			-D$(TARGET_BM)\
 			-Wno-unused-but-set-variable\
-	-O3 -march=native -mtune=native -flto=20 \
+#			-O3\
+#	-O3 -march=native -mtune=native -flto=20 \
 #-DLSM_DEBUG\
 #-DDFTL_DEBUG\
 
@@ -81,7 +82,7 @@ CFLAGS +=\
 		 -D_DEFAULT_SOURCE\
 		 -D_BSD_SOURCE\
 -DBENCH\
--DCDF\
+#-DCDF\
 
 SRCS +=\
 	./interface/queue.c\
@@ -133,7 +134,6 @@ endif
 LIBS +=\
 		-lpthread\
 		-lm\
-		-ljemalloc\
 #	-laio\
 
 all: cheeze_block_driver
@@ -142,16 +142,16 @@ DEBUG: debug_driver
 
 duma_sim: duma_driver
 
-debug_driver: ./interface/main.c libdriver_d.a libart.o
+debug_driver: ./interface/main.c libdriver_d.a 
 	$(CC) $(CFLAGS) -DDEBUG -o $@ $^ $(LIBS)
 
-cheeze_block_driver: ./interface/cheeze_hg_block.c ./interface/mainfiles/cheeze_block_main.c libdriver.a libart.o
+cheeze_block_driver: ./interface/cheeze_hg_block.c ./interface/mainfiles/cheeze_block_main.c libdriver.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(ARCH) $(LIBS)
 
-cheeze_trace_block_driver: ./interface/cheeze_hg_block.c ./interface/mainfiles/cheeze_trace_block_main.c libdriver.a libart.o
+cheeze_trace_block_driver: ./interface/cheeze_hg_block.c ./interface/mainfiles/cheeze_trace_block_main.c libdriver.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(ARCH) $(LIBS)
 
-driver: ./interface/vectored_main.c libdriver.a libart.o
+driver: ./interface/vectored_main.c libdriver.a 
 	$(CC) $(CFLAGS) -o $@ $^ $(ARCH) $(LIBS)
 
 bd_testcase: ./interface/mainfiles/testcase.c libdriver.a
@@ -174,10 +174,6 @@ duma_driver: ./interface/main.c libdriver.a
 
 jni: libdriver.a ./jni/DriverInterface.c
 	$(CC) -fPIC -o libdriver.so -shared -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux ./object/* $(LIBS)
-
-libart.o:
-	make -C ./include/data_struct/libart/
-	mv ./include/data_struct/libart/src/libart.o ./
 
 libfdsock.a:
 	cd ./include/flash_sock/ && $(MAKE) libfdsock.a && mv ./libfdsock.a ../../ && cd ../../

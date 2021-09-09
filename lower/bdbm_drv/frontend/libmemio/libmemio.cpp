@@ -164,7 +164,7 @@ memio_t* memio_open ()
 	mio->nr_tags = get_dev_tags(); /* # of request outstanding to HW possible */
 	//mio->nr_tags = 512 * 1024 / 8; /* # of request outstanding to HW possible */
 	mio->io_size = 8192;
-	mio->trim_lbas = (1 << 14);
+	mio->trim_lbas = (1 << 13);
 	mio->trim_size = mio->trim_lbas * mio->io_size;
 
 	mio->tagQ = new std::queue<int>;

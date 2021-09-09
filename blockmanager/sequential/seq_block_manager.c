@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+extern bb_checker checker;
 static uint64_t total_validate_piece_ppa;
 static uint64_t total_invalidate_piece_ppa;
 
@@ -72,9 +73,10 @@ int seq_get_cnt(void *a){
 	return aa->total_invalid_number;
 }
 
+uint32_t start_block;
 uint32_t seq_create (struct blockmanager* bm, lower_info *li){
 	bm->li=li;
-	//bb_checker_start(bm->li);/*check if the block is badblock*/
+	bb_checker_start(bm->li);/*check if the block is badblock*/ //erase all blocks
 #ifdef AMF
 	printf("NOC :%d _NOS:%ld\n", NOC,_NOS);
 #endif
@@ -102,7 +104,7 @@ uint32_t seq_create (struct blockmanager* bm, lower_info *li){
 	q_init(&p->free_logical_segment_q, _NOS);
 	q_init(&p->invalid_block_q, _NOS);
 	
-	for(uint32_t i=0; i<_NOS; i++){
+	for(uint32_t j=0, i=start_block%_NOS; j<_NOS; j++, i=(i+1)%_NOS){
 		q_enqueue((void*)&p->logical_segment[i], p->free_logical_segment_q);
 		p->free_block++;
 	}

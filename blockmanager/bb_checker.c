@@ -78,7 +78,7 @@ void bb_read_bb_checker(lower_info *li,uint32_t testing_page){
 }
 
 void bb_checker_static_bad(){
-	uint32_t arr[]={8438006,66560755,UINT32_MAX};
+	/*
 	for(int i=0; arr[i]!=UINT32_MAX;i++){
 		uint32_t bad_seg=arr[i]>>14;
 		if(!checker.ent[bad_seg].flag){
@@ -86,7 +86,7 @@ void bb_checker_static_bad(){
 			printf("new block bb:%d\n",bad_seg);
 			badblock_cnt++;
 		}
-	}
+	}*/
 }
 void bb_checker_start(lower_info *li){
 	memset(&checker,0,sizeof(checker));
@@ -112,12 +112,12 @@ void bb_checker_start(lower_info *li){
 	while(target_cnt!=_cnt){}
 	printf("\n");
 //	bb_checker_process(0,true);
-	data_checker_data=(char*)malloc(PAGESIZE);
-	memset(data_checker_data,-1,PAGESIZE);
+	//data_checker_data=(char*)malloc(PAGESIZE);
+	//memset(data_checker_data,-1,PAGESIZE);
 
-	bb_checker_static_bad();
+	//bb_checker_static_bad();
 	printf("badblock_cnt: %lu\n",badblock_cnt);
-	bb_checker_fixing();
+	//bb_checker_fixing();
 	printf("checking done!\n");	
 /*
 	printf("read badblock checking\n");
@@ -134,6 +134,7 @@ void *bb_checker_process(uint64_t bad_seg,uint8_t isbad){
 	if(!checker.ent[bad_seg].flag){
 		checker.ent[bad_seg].flag=isbad;
 		if(isbad){
+			printf("%lu is bad_block\n", bad_seg);
 			badblock_cnt++;
 		}
 	}

@@ -46,7 +46,6 @@ lower_info amf_info={
 	.lower_free=NULL,
 	.lower_flying_req_wait=amf_flying_req_wait,
 	.lower_show_info=amf_info_show_info,
-
 	.lower_tag_num=amf_info_lower_tag_num,
 };
 

@@ -250,7 +250,7 @@ class FlashIndication: public FlashIndicationWrapper {
 			//			bdbm_sema_unlock (&global_lock);
 			if( r == NULL ) { printf("eraseDone: Ack Duplicate with tag=%d, status=%d\n", tag, status); fflush(stdout); return; }
 			if(status==1){
-				r->segnum=r->logaddr.lpa[0]/(1<<14);
+				r->segnum=r->logaddr.lpa[0]/(1<<13);
 				r->isbad=1;
 			}
 			else{
@@ -664,8 +664,8 @@ uint32_t dm_nohost_make_req (
 		case REQTYPE_GC_WRITE:
 			bus  = r->logaddr.lpa[0] & 0x7;
 			chip = (r->logaddr.lpa[0] >> 3) & 0x7;
-			page = (r->logaddr.lpa[0] >> 6) & 0xFF;
-			block = (r->logaddr.lpa[0] >> 14);
+			page = (r->logaddr.lpa[0] >> 6) & 127;
+			block = (r->logaddr.lpa[0] >> 13);
 			device->writePage(bus, chip, block, page, r->tag, r->dmaTag * FPAGE_SIZE);
 			//pthread_mutex_unlock(&endR);
 			//
@@ -676,10 +676,10 @@ uint32_t dm_nohost_make_req (
 			bdbm_memcpy (writeBuffers[r->tag], r->fmain.kp_ptr[0], 8192);
 			//device->writePage (r->tag, r->logaddr.lpa[0], (DMASIZE - NUM_TAGS + r->tag) * FPAGE_SIZE);
 
-			bus  = r->logaddr.lpa[0] & 0x7;
-			chip = (r->logaddr.lpa[0] >> 3) & 0x7;
-			page = (r->logaddr.lpa[0] >> 6) & 0xFF;
-			block = (r->logaddr.lpa[0] >> 14);
+			bus  = r->logaddr.lpa[0] & 0x7; 
+			chip = (r->logaddr.lpa[0] >> 3) & 0x7; //4chips per bus
+			page = (r->logaddr.lpa[0] >> 6) & 127; 
+			block = (r->logaddr.lpa[0] >> 13); // MIT SLC version has 4096 blocks
 			device->writePage(bus, chip, block, page, r->tag, r->dmaTag * FPAGE_SIZE);
 			//printf ("WRITE-LOG: %c %c\n", r->fmain.kp_ptr[0][0], r->fmain.kp_ptr[0][8191]); fflush(stdout);
 			break;
@@ -693,8 +693,8 @@ uint32_t dm_nohost_make_req (
 
 			bus  = r->logaddr.lpa[0] & 0x7;
 			chip = (r->logaddr.lpa[0] >> 3) & 0x7;
-			page = (r->logaddr.lpa[0] >> 6) & 0xFF;
-			block = (r->logaddr.lpa[0] >> 14);
+			page = (r->logaddr.lpa[0] >> 6) & 127;
+			block = (r->logaddr.lpa[0] >> 13);
 			device->readPage(bus, chip, block, page, r->tag, r->dmaTag * FPAGE_SIZE);
 			break;
 
@@ -704,8 +704,8 @@ uint32_t dm_nohost_make_req (
 
 			bus  = r->logaddr.lpa[0] & 0x7;
 			chip = (r->logaddr.lpa[0] >> 3) & 0x7;
-			page = (r->logaddr.lpa[0] >> 6) & 0xFF;
-			block = (r->logaddr.lpa[0] >> 14);
+			page = (r->logaddr.lpa[0] >> 6) & 127;
+			block = (r->logaddr.lpa[0] >> 13);
 			device->readPage(bus, chip, block, page, r->tag, r->dmaTag * FPAGE_SIZE);
 			break;
 
@@ -714,8 +714,8 @@ uint32_t dm_nohost_make_req (
 			//device->eraseBlock (r->tag, r->logaddr.lpa[0]);
 			bus  = r->logaddr.lpa[0] & 0x7;
 			chip = (r->logaddr.lpa[0] >> 3) & 0x7;
-			//page = (r->logaddr.lpa[0] >> 6) & 0xFF;
-			block = (r->logaddr.lpa[0] >> 14);
+			//page = (r->logaddr.lpa[0] >> 6) & 127;
+			block = (r->logaddr.lpa[0] >> 13);
 			device->eraseBlock(bus, chip, block, r->tag);
 			break;
 		default:
